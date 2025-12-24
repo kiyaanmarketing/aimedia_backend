@@ -4,7 +4,7 @@ const { getDB } = require('../mongo-config');
 
 const collectionName = 'AffiliateUrlsN';
 
-// ✅ Get all URLs
+
 // ✅ Get all URLs
 router.get('/tracking-urls', async (req, res) => {
   try {

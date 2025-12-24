@@ -3,7 +3,7 @@ require("dotenv").config();
 const corsMiddleware = require("./middleware/corsMiddleware");
 const path = require("path");
 const trackingRoutes = require('./routes/tracking');
-//const trackingRoutesNew = require('./routes/trackingNew');
+const trackingRoutesNew = require('./routes/track');
 const {  connectDB, getDB } = require('./mongo-config');
 
 const app = express();
@@ -355,17 +355,8 @@ app.get('/api/fallback-pixel', async (req, res) => {
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use('/api', trackingRoutes);
+app.use('/api', trackingRoutesNew);
 
-
-// Serve the manage tracking URLs page
-// app.get('/api/manage-tracking-urls', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'public', 'manageTracking.html'));
-// });
-
-// Serve the manage tracking URLs page
-// app.get('/api/affiliateUrls', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'public', 'manageTrackingNew.html'));
-// });
 
 
 connectDB()
