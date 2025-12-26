@@ -5,6 +5,7 @@ const path = require("path");
 const trackingRoutes = require('./routes/tracking');
 const trackingRoutesNew = require('./routes/track');
 const {  connectDB, getDB } = require('./mongo-config');
+const { getAffiliateUrlByHostNameFindActive } = require("../utils/affiliateResolver");
 
 const app = express();
 const port = process.env.PORT || 1225;
@@ -45,21 +46,21 @@ const getAllHostName = async (collectionName) => {
 };
  
 
-const getAffiliateUrlByHostNameFindActive = async (hostname, collectionName) => {
-  const db = getDB();
+// const getAffiliateUrlByHostNameFindActive = async (hostname, collectionName) => {
+//   const db = getDB();
   
-  try {
-    const result = await db.collection(collectionName)
-                          .findOne({ 
-                            hostname: hostname, 
-                            status: "active"  // <-- only active hosts
-                          });
-    return result ? result.affiliateUrl : '';
-  } catch (error) {
-    console.error('MongoDB Error:', error);
-    return '';
-  }
-};
+//   try {
+//     const result = await db.collection(collectionName)
+//                           .findOne({ 
+//                             hostname: hostname, 
+//                             status: "active"  // <-- only active hosts
+//                           });
+//     return result ? result.affiliateUrl : '';
+//   } catch (error) {
+//     console.error('MongoDB Error:', error);
+//     return '';
+//   }
+// };
 
 
 const getAffiliateUrlByHostNameFind = async (hostname, collectionName) => {
