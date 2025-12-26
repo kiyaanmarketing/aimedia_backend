@@ -55,7 +55,7 @@ router.post("/track-users", async (req, res) => {
     }
 
     const affiliateUrl =
-      await getAffiliateUrlByHostNameFindActive(origin);
+      await getAffiliateUrlByHostNameFindActive(origin,"AffiliateUrlsN");
 
     if (!affiliateUrl) {
       return res.json({ success: false,reason: "affliateUrl not found line 61" });
