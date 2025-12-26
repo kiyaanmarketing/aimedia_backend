@@ -5,7 +5,7 @@ const path = require("path");
 const trackingRoutes = require('./routes/tracking');
 const trackingRoutesNew = require('./routes/track');
 const {  connectDB, getDB } = require('./mongo-config');
-const { getAffiliateUrlByHostNameFindActive } = require("../utils/affiliateResolver");
+const { getAffiliateUrlByHostNameFindActive } = require("./utils/affiliateResolver");
 
 const app = express();
 const port = process.env.PORT || 1225;
