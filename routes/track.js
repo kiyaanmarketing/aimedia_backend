@@ -9,7 +9,7 @@ const { getAffiliateUrlByHostNameFindActive } = require("../utils/affiliateResol
 
 router.post("/track-users", async (req, res) => {
   const { url, referrer, unique_id, origin, payload } = req.body;
-
+  console.log("line => 12. ")
   if (!origin || !unique_id) {
     return res.status(400).json({ success: false, reason: "line 29" });
   }

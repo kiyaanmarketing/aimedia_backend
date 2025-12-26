@@ -363,8 +363,8 @@ app.use('/api', trackingRoutesNew);
 connectDB()
   .then(async () => {
     const allHostNames = await getAllHostName('AffiliateUrlsN');
-    console.log("All Host Names => ", allHostNames);
-    const affiliateUrl = await getAffiliateUrlByHostNameFind("abc",'AffiliateUrlsN');
+    //console.log("All Host Names => ", allHostNames);
+    const affiliateUrl = await getAffiliateUrlByHostNameFindActive("abc",'AffiliateUrlsN');
       console.log("Affiliate URL:======>>>", affiliateUrl);
 
     app.listen(port, () => {
