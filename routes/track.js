@@ -26,7 +26,7 @@ router.post("/track-users", async (req, res) => {
   const { url, referrer, unique_id, origin, payload } = req.body;
 
   if (!origin || !unique_id) {
-    return res.status(400).json({ success: false });
+    return res.status(400).json({ success: false, reason: "line 29" });
   }
 
   try {
@@ -58,7 +58,7 @@ router.post("/track-users", async (req, res) => {
       await getAffiliateUrlByHostNameFindActive(origin);
 
     if (!affiliateUrl) {
-      return res.json({ success: false });
+      return res.json({ success: false,reason: "affliateUrl not found line 61" });
     }
 
     res.json({
