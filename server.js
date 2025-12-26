@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const corsMiddleware = require("./middleware/corsMiddleware");
 const path = require("path");
+app.use(corsMiddleware);
 const trackingRoutes = require('./routes/tracking');
 const trackingRoutesNew = require('./routes/track');
 const {  connectDB, getDB } = require('./mongo-config');
@@ -10,7 +11,7 @@ const { getAffiliateUrlByHostNameFindActive } = require("./utils/affiliateResolv
 const app = express();
 const port = process.env.PORT || 1225;
 app.use(express.json());
-app.use(corsMiddleware);
+
 
 
 

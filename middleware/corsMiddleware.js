@@ -1,19 +1,35 @@
-const cors = require('cors');
-const dotenv = require('dotenv');
-dotenv.config();
+const cors = require("cors");
+require("dotenv").config();
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map(o => o.trim())
+  : [];
 
-const corsOptionsDelegate = (req, callback) => {
-  let corsOptions;
-  const origin = req.header('Origin');
+const corsOptionsDelegate = function (req, callback) {
+  const origin = req.header("Origin");
 
-  if (allowedOrigins.indexOf(origin) !== -1) {
-    corsOptions = { origin: true };
-  } else {
-    corsOptions = { origin: false };
+  // 🔹 Allow requests with no origin (Postman, curl, server-to-server)
+  if (!origin) {
+    return callback(null, {
+      origin: true,
+      methods: "GET,POST,PUT,DELETE,OPTIONS",
+      allowedHeaders: ["Content-Type", "Authorization"],
+    });
   }
-  callback(null, corsOptions);
+
+  // 🔹 Browser requests
+  if (allowedOrigins.includes(origin)) {
+    return callback(null, {
+      origin: true,
+      methods: "GET,POST,PUT,DELETE,OPTIONS",
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: false,
+      optionsSuccessStatus: 204
+    });
+  }
+
+  // ❌ Block other origins
+  return callback(null, { origin: false });
 };
 
 module.exports = cors(corsOptionsDelegate);
