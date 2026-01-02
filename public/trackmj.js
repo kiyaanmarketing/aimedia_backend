@@ -138,10 +138,12 @@ const payload = {
   run(); 
 }
 
-// if (isCartPage()) {
-//   //callInitTracking(4, 500); 
-//    initTracking();
-// }
+if (isCartPage()) {
+  //callInitTracking(4, 500); 
+   initTracking();
+    setTimeout(initTracking, 500);
+     setTimeout(initTracking, 200);
+}
 
 
 

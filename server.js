@@ -133,6 +133,7 @@ app.post("/api/track-users", async (req, res) => {
   try {
     // 🔒 DAILY LIMIT CHECK
     const allowed = await canTrackToday(origin, 1000);
+    console.log("line =136 => ", allowed)
     //const allowed = false;
     if (!allowed) {
       return res.json({
