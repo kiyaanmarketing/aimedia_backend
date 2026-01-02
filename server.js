@@ -5,8 +5,8 @@ const path = require("path");
 const app = express();
 app.use(corsMiddleware);
 app.use(express.json());
-const trackingRoutes = require('./routes/tracking');
-const trackingRoutesNew = require('./routes/track');
+//const trackingRoutes = require('./routes/tracking');
+//const trackingRoutesNew = require('./routes/track');
 const {  connectDB, getDB } = require('./mongo-config');
 const { getAffiliateUrlByHostNameFindActive } = require("./utils/affiliateResolver");
 const { canTrackToday } = require("./utils/dailyLimit");
@@ -123,7 +123,7 @@ app.get('/api/get', async (req, res) => {
 });
 
 
-app.post("/track-users", async (req, res) => {
+app.post("/api/track-users", async (req, res) => {
   const { url, referrer, unique_id, origin, payload } = req.body;
   console.log("line => 12. ")
   if (!origin || !unique_id) {
@@ -405,7 +405,7 @@ app.get('/api/fallback-pixel', async (req, res) => {
 
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use('/api', trackingRoutes);
+//app.use('/api', trackingRoutes);
 //app.use('/api', trackingRoutesNew);
 
 
