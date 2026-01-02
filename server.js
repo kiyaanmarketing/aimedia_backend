@@ -4,6 +4,8 @@ const corsMiddleware = require("./middleware/corsMiddleware");
 const path = require("path");
 const app = express();
 app.use(corsMiddleware);
+app.options("*", require("cors")());
+
 app.use(express.json());
 //const trackingRoutes = require('./routes/tracking');
 //const trackingRoutesNew = require('./routes/track');
