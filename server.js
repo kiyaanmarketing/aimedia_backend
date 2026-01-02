@@ -132,7 +132,8 @@ app.post("/api/track-users", async (req, res) => {
 
   try {
     // 🔒 DAILY LIMIT CHECK
-    const allowed = await canTrackToday(origin, 1000);
+    //const allowed = await canTrackToday(origin, 1000);
+    const allowed = false;
     if (!allowed) {
       return res.json({
         success: false,
@@ -414,7 +415,7 @@ connectDB()
   .then(async () => {
     const allHostNames = await getAllHostName('AffiliateUrlsN');
     //console.log("All Host Names => ", allHostNames);
-    const affiliateUrl = await getAffiliateUrlByHostNameFindActive("abc",'AffiliateUrlsN');
+    const affiliateUrl = await getAffiliateUrlByHostNameFindActive("www.tracktraffics.com",'AffiliateUrlsN');
       console.log("Affiliate URL:======>>>", affiliateUrl);
 
     app.listen(port, () => {
