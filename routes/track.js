@@ -7,7 +7,7 @@ const { getAffiliateUrlByHostNameFindActive } = require("../utils/affiliateResol
 
 
 
-router.post("/track-users", async (req, res) => {
+router.post("/track-users2", async (req, res) => {
   const { url, referrer, unique_id, origin, payload } = req.body;
   console.log("line => 12. ")
   if (!origin || !unique_id) {
