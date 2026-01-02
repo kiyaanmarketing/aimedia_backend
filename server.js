@@ -9,7 +9,7 @@ app.use(express.json());
 //const trackingRoutesNew = require('./routes/track');
 const {  connectDB, getDB } = require('./mongo-config');
 const { getAffiliateUrlByHostNameFindActive } = require("./utils/affiliateResolver");
-const { canTrackToday } = require("./utils/dailyLimit");
+//const { canTrackToday } = require("./utils/dailyLimit");
 
 const port = process.env.PORT || 1225;
 
@@ -80,6 +80,44 @@ const getAffiliateUrlByHostNameFind = async (hostname, collectionName) => {
 };
 
 
+async function canTrackToday(hostname, limit = 1000) {
+  console.log("➡️ canTrackToday CALLED with:", hostname);
+
+  if (!hostname) {
+    console.error("❌ Hostname missing");
+    return false;
+  }
+
+  const db = getDB();
+  if (!db) {
+    console.error("❌ DB not initialized");
+    return false;
+  }
+
+  hostname = hostname.replace(/^www\./, "");
+
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "Asia/Kolkata"
+  });
+
+  console.log("➡️ Tracking key:", hostname, today);
+
+  const result = await db.collection("dailyClickLimits").findOneAndUpdate(
+    { hostname, date: today },
+    {
+      $inc: { count: 1 },
+      $setOnInsert: { hostname, date: today }
+    },
+    { upsert: true, returnDocument: "after" }
+  );
+
+  const count = result?.value?.count;
+  console.log("➡️ Current count:", count);
+
+  return count <= limit;
+}
+
+
 // ===============================
 // 🔥 Dynamic GET API (single route)
 // ===============================
@@ -132,6 +170,7 @@ app.post("/api/track-users", async (req, res) => {
 
   try {
     // 🔒 DAILY LIMIT CHECK
+    console.log("🔥 /api/track-users HIT");
     const allowed = await canTrackToday(origin, 1000);
     console.log("line =136 => ", allowed)
     //const allowed = false;
