@@ -4,6 +4,7 @@ async function canTrackToday(hostname, limit = 1000) {
   const db = getDB();
   if (!db) throw new Error("DB not initialized");
 
+  
   // normalize hostname
   hostname = hostname.replace(/^www\./, "");
 
@@ -24,6 +25,10 @@ async function canTrackToday(hostname, limit = 1000) {
     );
 
   if (!result.value) return false;
+  console.log(
+  `[DAILY LIMIT] ${hostname} | ${today} | count=${result.value.count}/${limit}`
+);
+
 
   return result.value.count <= limit;
 }
