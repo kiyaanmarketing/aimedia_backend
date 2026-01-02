@@ -132,8 +132,8 @@ app.post("/api/track-users", async (req, res) => {
 
   try {
     // 🔒 DAILY LIMIT CHECK
-    //const allowed = await canTrackToday(origin, 1000);
-    const allowed = false;
+    const allowed = await canTrackToday(origin, 1000);
+    //const allowed = false;
     if (!allowed) {
       return res.json({
         success: false,
