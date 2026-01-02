@@ -1,21 +1,30 @@
 const { getDB } = require("../mongo-config");
 
 async function canTrackToday(hostname, limit = 1000) {
-  const db = getDB();
-  if (!db) throw new Error("DB not initialized");
+  console.log("➡️ canTrackToday called with:", hostname);
 
-  
-  // normalize hostname
+  if (!hostname) {
+    console.error("❌ Hostname missing");
+    return false;
+  }
+
+  const db = getDB();
+  if (!db) {
+    console.error("❌ DB not initialized");
+    return false;
+  }
+
   hostname = hostname.replace(/^www\./, "");
 
-  // IST date (important)
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "Asia/Kolkata"
   });
 
-  const result = await db
-    .collection("dailyClickLimits")
-    .findOneAndUpdate(
+  console.log("➡️ Tracking key:", hostname, today);
+
+  let result;
+  try {
+    result = await db.collection("dailyClickLimits").findOneAndUpdate(
       { hostname, date: today },
       {
         $inc: { count: 1 },
@@ -23,14 +32,23 @@ async function canTrackToday(hostname, limit = 1000) {
       },
       { upsert: true, returnDocument: "after" }
     );
+  } catch (err) {
+    console.error("❌ Mongo error in daily limit:", err);
+    return false;
+  }
 
-  if (!result.value) return false;
+  const count = result?.value?.count;
+
+  if (typeof count !== "number") {
+    console.error("❌ Invalid count result:", result);
+    return false;
+  }
+
   console.log(
-  `[DAILY LIMIT] ${hostname} | ${today} | count=${result.value.count}/${limit}`
-);
+    `[DAILY LIMIT] ${hostname} | ${today} | count=${count}/${limit}`
+  );
 
-
-  return result.value.count <= limit;
+  return count <= limit;
 }
 
 module.exports = { canTrackToday };
