@@ -123,7 +123,7 @@ app.get('/api/get', async (req, res) => {
 });
 
 
-router.post("/track-users", async (req, res) => {
+app.post("/track-users", async (req, res) => {
   const { url, referrer, unique_id, origin, payload } = req.body;
   console.log("line => 12. ")
   if (!origin || !unique_id) {
