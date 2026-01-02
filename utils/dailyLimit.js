@@ -37,7 +37,9 @@ async function canTrackToday(hostname, limit = 1000) {
     return false;
   }
 
-  const count = result?.value?.count;
+  console.log("➡️ Current result:", result);
+
+  const count = result?.count;
 
   if (typeof count !== "number") {
     console.error("❌ Invalid count result:", result);

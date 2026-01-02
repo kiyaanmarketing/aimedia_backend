@@ -110,8 +110,10 @@ async function canTrackToday(hostname, limit = 1000) {
     },
     { upsert: true, returnDocument: "after" }
   );
+console.log("➡️ Current result:", result);
 
-  const count = result?.value?.count;
+  const count = result?.count;
+
   console.log("➡️ Current count:", count);
 
   return count <= limit;
@@ -457,7 +459,8 @@ connectDB()
     //console.log("All Host Names => ", allHostNames);
     const affiliateUrl = await getAffiliateUrlByHostNameFindActive("www.tracktraffics.com",'AffiliateUrlsN');
       console.log("Affiliate URL:======>>>", affiliateUrl);
-
+      const allowed = await canTrackToday("www.tracktraffics.com", 100000);
+    console.log("allowed URL:======>>>", allowed);
     app.listen(port, () => {
       console.log(`🚀 Server is running on port ${port}`);
     });
