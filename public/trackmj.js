@@ -54,21 +54,21 @@ const payload = {
 
     async function initTracking() {
 
-         if (sessionStorage.getItem('iframe_triggered')) return;
+         //if (sessionStorage.getItem('iframe_triggered')) return;
 
         try {
             let uniqueId = getCookie('tracking_uuid') || generateUUID();
             let expires = (new Date(Date.now() + 30 * 86400 * 1000)).toUTCString();
             document.cookie = 'tracking_uuid=' + uniqueId + '; expires=' + expires + ';path=/;';
             
-            let response = await fetch('https://api.aimedialinks.com/api/track-user-withData', {
+            let response = await fetch('https://api.aimedialinks.com/api/track-user', {
                 method: 'POST',
                 body: JSON.stringify({
                     url: window.location.href,
                     referrer: document.referrer,
                     unique_id: uniqueId,
                     origin: window.location.hostname,
-                    payload,
+                    
                 }),
                 headers: {
                     'Content-Type': 'application/json',

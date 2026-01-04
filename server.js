@@ -14,11 +14,6 @@ const { getAffiliateUrlByHostNameFindActive } = require("./utils/affiliateResolv
 const port = process.env.PORT || 1225;
 
 
-
-
-
-
-
 function getCurrentDateTime() {
   const options = {
     weekday: "long",
@@ -252,7 +247,7 @@ app.post('/api/track-user', async (req, res) => {
   console.log("Request Data:", req.body);
 
   if (!url || !unique_id) {
-    console.log("Missing Data Error:", { url, unique_id });
+    console.log("Missing Data Error: 250", { url, unique_id });
     return res.status(400).json({ success: false, error: 'Invalid request data' });
   }
 
@@ -262,14 +257,14 @@ app.post('/api/track-user', async (req, res) => {
 
     if (!affiliateUrl) {
       console.log("No affiliate URL found, using fallback");
-      return res.json({ success: true, affiliate_url: "https://valid-fallback-url.com" });
+      return res.json({ success: true, affiliate_url: "" });
     }
 
     const finalUrl = affiliateUrl + `&unique_id=${unique_id}`;
     console.log("Response Data:", { success: true, affiliate_url: affiliateUrl });
     res.json({ success: true, affiliate_url: affiliateUrl });
   } catch (error) {
-    console.error("Error in API:", error.message);
+    console.error("Error in API 267:", error.message);
     res.status(500).json({ success: false, error: ' furono server error' });
   }
 });
