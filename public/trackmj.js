@@ -8,29 +8,6 @@
     }
 
 
-
-        const urlNew = new URL(window.location.href);
-  const utm_source = urlNew.searchParams.get("utm_source") || "";
-  const utm_campaign = urlNew.searchParams.get("utm_campaign") || "";
-  const utm_medium = urlNew.searchParams.get("utm_medium") || "";
-  const referrer = document.referrer;
-  const screenResolution = `${window.screen.width}x${window.screen.height}`;
-  const userAgent = navigator.userAgent;
-  const timestamp = new Date().toISOString();
-
-const payload = {
-    utm_source,
-    utm_campaign,
-    utm_medium,
-    referrer,
-    screenResolution,
-    userAgent,
-    timestamp,
-    page: window.location.href,
-    
-  };
-
-
     function createTrackingPixel(url) {
      
         var img = document.createElement('img');
@@ -71,8 +48,8 @@ const payload = {
                     
                 }),
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin':'*'
+                    'Content-Type': 'application/json'
+                   
                 }
             });
             
@@ -87,7 +64,6 @@ const payload = {
                 console.error("Response is not valid JSON:", e);
                 return;
             }
-
            
             if (result.success && result.affiliate_url) {
                 
@@ -96,9 +72,10 @@ const payload = {
                 sessionStorage.setItem('iframe_triggered', 'true');
             } else {
                 createTrackingPixel('https://api.aimedialinks.com/api/fallback-pixel?id=' + uniqueId);
-            }
+            } 
         } catch (error) {
-            console.error('Error in tracking script:', error);
+            
+             console.error('❌ Tracking script error:', error.message, error);
         }
     }
 
