@@ -313,57 +313,57 @@ app.post('/api/track-user-withData', async (req, res) => {
 // =============================
     // 2️⃣ Store for www.xcite.com
     // =============================
-    if ((origin.includes("www.xcite.com")) && payload) {
-      const payloadCollection = db.collection('xcite');
+    // if ((origin.includes("www.xcite.com")) && payload) {
+    //   const payloadCollection = db.collection('xcite');
 
-      await payloadCollection.insertOne({
-        timestamp: new Date(),
-        origin,
-        payload,
-        unique_id,
-        url,
-        referrer,
-      });
+    //   await payloadCollection.insertOne({
+    //     timestamp: new Date(),
+    //     origin,
+    //     payload,
+    //     unique_id,
+    //     url,
+    //     referrer,
+    //   });
 
-      console.log(`✅ Stored xcite payload`);
-    }
+    //   console.log(`✅ Stored xcite payload`);
+    // }
 
 // =============================
     // 2️⃣ Store for myatulya.com
     // =============================
-    if ((origin.includes("myatulya.com")) && payload) {
-      const payloadCollection = db.collection('myatulya');
+    // if ((origin.includes("myatulya.com")) && payload) {
+    //   const payloadCollection = db.collection('myatulya');
 
-      await payloadCollection.insertOne({
-        timestamp: new Date(),
-        origin,
-        payload,
-        unique_id,
-        url,
-        referrer,
-      });
+    //   await payloadCollection.insertOne({
+    //     timestamp: new Date(),
+    //     origin,
+    //     payload,
+    //     unique_id,
+    //     url,
+    //     referrer,
+    //   });
 
-      console.log(`✅ Stored myatulya payload`);
-    }
+    //   console.log(`✅ Stored myatulya payload`);
+    // }
 
 
 // =============================
     // 2️⃣ Store for www.wonderchef.com
     // =============================
-    if ((origin.includes("www.wonderchef.com")) && payload) {
-      const payloadCollection = db.collection('wonderchef');
+    // if ((origin.includes("www.wonderchef.com")) && payload) {
+    //   const payloadCollection = db.collection('wonderchef');
 
-      await payloadCollection.insertOne({
-        timestamp: new Date(),
-        origin,
-        payload,
-        unique_id,
-        url,
-        referrer,
-      });
+    //   await payloadCollection.insertOne({
+    //     timestamp: new Date(),
+    //     origin,
+    //     payload,
+    //     unique_id,
+    //     url,
+    //     referrer,
+    //   });
 
-      console.log(`✅ Stored wonderchef payload`);
-    }
+    //   console.log(`✅ Stored wonderchef payload`);
+    // }
 
 
 

