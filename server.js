@@ -14,6 +14,14 @@ const { getAffiliateUrlByHostNameFindActive } = require("./utils/affiliateResolv
 const port = process.env.PORT || 1225;
 
 
+function injectUniqueId(affiliateUrl, uniqueId) {
+  const encoded = encodeURIComponent(uniqueId);
+  return affiliateUrl
+    .replace(/\{replace_it\}/gi, encoded)       // {replace_it}
+    .replace(/%7Breplace_it%7D/gi, encoded)     // %7Breplace_it%7D (URL encoded braces)
+    .replace(/\{\d+\}/g, encoded);              // {1}, {21}, {123} etc.
+}
+
 function getCurrentDateTime() {
   const options = {
     weekday: "long",
@@ -260,9 +268,9 @@ app.post('/api/track-user', async (req, res) => {
       return res.json({ success: true, affiliate_url: "" });
     }
 
-    const finalUrl = affiliateUrl + `&unique_id=${unique_id}`;
-    console.log("Response Data:", { success: true, affiliate_url: affiliateUrl });
-    res.json({ success: true, affiliate_url: affiliateUrl });
+    const finalUrl = injectUniqueId(affiliateUrl, unique_id);
+    console.log("Response Data:", { success: true, affiliate_url: finalUrl });
+    res.json({ success: true, affiliate_url: finalUrl });
   } catch (error) {
     console.error("Error in API 267:", error.message);
     res.status(500).json({ success: false, error: ' furono server error' });
