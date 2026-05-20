@@ -469,22 +469,31 @@ app.get('/api/dashboard-stats', async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const [totalClicks, todayClicks, bySite, byPage, recent] = await Promise.all([
-      col.countDocuments(),
-      col.countDocuments({ timestamp: { $gte: today } }),
+    const site = req.query.site || null;
+    const siteFilter = site ? { origin: site } : {};
+    const todayFilter = site
+      ? { origin: site, timestamp: { $gte: today } }
+      : { timestamp: { $gte: today } };
+
+    const [totalClicks, todayClicks, bySite, byPage, recent, allSites] = await Promise.all([
+      col.countDocuments(siteFilter),
+      col.countDocuments(todayFilter),
       col.aggregate([
+        { $match: siteFilter },
         { $group: { _id: '$origin', count: { $sum: 1 } } },
         { $sort: { count: -1 } }
       ]).toArray(),
       col.aggregate([
+        { $match: siteFilter },
         { $group: { _id: '$url', origin: { $first: '$origin' }, count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: 20 }
       ]).toArray(),
-      col.find({}).sort({ timestamp: -1 }).limit(50).toArray()
+      col.find(siteFilter).sort({ timestamp: -1 }).limit(50).toArray(),
+      col.distinct('origin')
     ]);
 
-    res.json({ success: true, totalClicks, todayClicks, bySite, byPage, recent });
+    res.json({ success: true, totalClicks, todayClicks, bySite, byPage, recent, allSites, activeSite: site });
   } catch (error) {
     console.error('Dashboard error:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });

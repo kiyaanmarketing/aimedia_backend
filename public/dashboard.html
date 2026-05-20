@@ -21,9 +21,41 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
     header h1 { font-size: 18px; font-weight: 600; color: #fff; }
+
+    .header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .site-filter-wrap { display: flex; align-items: center; gap: 8px; }
+
+    .site-filter-label { font-size: 12px; color: #8892a4; }
+
+    .site-select {
+      background: #252840;
+      color: #e2e8f0;
+      border: 1px solid #3b3f5c;
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+      min-width: 180px;
+    }
+    .site-select:focus { border-color: #4c6ef5; }
+
+    .clear-btn {
+      background: transparent;
+      color: #8892a4;
+      border: 1px solid #3b3f5c;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .clear-btn:hover { color: #e2e8f0; border-color: #6c7bbd; }
 
     .refresh-btn {
       background: #3b5bdb;
@@ -36,9 +68,18 @@
     }
     .refresh-btn:hover { background: #4c6ef5; }
 
+    .active-filter-banner {
+      background: #1e3a5f;
+      border-bottom: 1px solid #2a5080;
+      padding: 8px 32px;
+      font-size: 12px;
+      color: #63b3ed;
+      display: none;
+    }
+    .active-filter-banner.visible { display: block; }
+
     .container { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
 
-    /* Stat Cards */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -61,16 +102,10 @@
       margin-bottom: 8px;
     }
 
-    .stat-card .value {
-      font-size: 32px;
-      font-weight: 700;
-      color: #fff;
-    }
-
+    .stat-card .value { font-size: 32px; font-weight: 700; color: #fff; }
     .stat-card .value.green { color: #51cf66; }
     .stat-card .value.blue  { color: #4dabf7; }
 
-    /* Sections */
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -146,19 +181,21 @@
       border-radius: 4px;
       font-size: 11px;
       font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
     }
+    .origin-chip:hover { background: #2a4f7a; }
 
-    .bar-wrap { padding: 4px 0; }
-    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; cursor: pointer; }
+    .bar-row:hover .bar-label { color: #fff; }
     .bar-label { font-size: 12px; color: #a0aec0; width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .bar-track { flex: 1; background: #2d3148; border-radius: 4px; height: 8px; }
     .bar-fill { height: 8px; border-radius: 4px; background: #3b5bdb; transition: width 0.4s; }
+    .bar-fill.active { background: #51cf66; }
     .bar-count { font-size: 12px; color: #fff; font-weight: 600; min-width: 32px; text-align: right; }
 
     .loading { text-align: center; padding: 48px; color: #8892a4; font-size: 14px; }
-
     .time-cell { font-size: 11px; color: #8892a4; white-space: nowrap; }
-
     .full-section { margin-bottom: 24px; }
   </style>
 </head>
@@ -166,8 +203,19 @@
 
 <header>
   <h1>Click Dashboard</h1>
-  <button class="refresh-btn" onclick="loadStats()">Refresh</button>
+  <div class="header-right">
+    <div class="site-filter-wrap">
+      <span class="site-filter-label">Site:</span>
+      <select class="site-select" id="siteSelect" onchange="onSiteChange()">
+        <option value="">All Sites</option>
+      </select>
+      <button class="clear-btn" onclick="clearFilter()">Clear</button>
+    </div>
+    <button class="refresh-btn" onclick="loadStats()">Refresh</button>
+  </div>
 </header>
+
+<div class="active-filter-banner" id="filterBanner"></div>
 
 <div class="container">
 
@@ -211,19 +259,61 @@
 </div>
 
 <script>
+  let activeSite = '';
+
+  function onSiteChange() {
+    activeSite = document.getElementById('siteSelect').value;
+    loadStats();
+  }
+
+  function clearFilter() {
+    activeSite = '';
+    document.getElementById('siteSelect').value = '';
+    loadStats();
+  }
+
+  function filterBySite(site) {
+    activeSite = site;
+    document.getElementById('siteSelect').value = site;
+    loadStats();
+  }
+
   async function loadStats() {
+    const url = activeSite
+      ? '/api/dashboard-stats?site=' + encodeURIComponent(activeSite)
+      : '/api/dashboard-stats';
+
     try {
-      const res = await fetch('/api/dashboard-stats');
+      const res = await fetch(url);
       const data = await res.json();
       if (!data.success) return;
 
+      updateSiteDropdown(data.allSites);
+      updateFilterBanner(data.activeSite);
       renderStatCards(data);
-      renderBySite(data.bySite);
+      renderBySite(data.bySite, data.activeSite);
       renderByPage(data.byPage);
       renderRecent(data.recent);
     } catch (e) {
       document.getElementById('statsGrid').innerHTML =
         '<div class="loading">Failed to load data. Is server running?</div>';
+    }
+  }
+
+  function updateSiteDropdown(allSites) {
+    const sel = document.getElementById('siteSelect');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">All Sites</option>' +
+      (allSites || []).map(s => `<option value="${s}" ${s === current ? 'selected' : ''}>${s}</option>`).join('');
+  }
+
+  function updateFilterBanner(site) {
+    const banner = document.getElementById('filterBanner');
+    if (site) {
+      banner.textContent = 'Filtered by: ' + site;
+      banner.classList.add('visible');
+    } else {
+      banner.classList.remove('visible');
     }
   }
 
@@ -248,17 +338,18 @@
     `;
   }
 
-  function renderBySite(bySite) {
+  function renderBySite(bySite, activeSite) {
     if (!bySite.length) {
       document.getElementById('bySiteChart').innerHTML = '<div class="loading">No data yet</div>';
       return;
     }
     const max = bySite[0].count;
     document.getElementById('bySiteChart').innerHTML = bySite.map(s => `
-      <div class="bar-row">
-        <div class="bar-label" title="${s._id}">${s._id || 'unknown'}</div>
+      <div class="bar-row" onclick="filterBySite('${s._id}')" title="Click to filter">
+        <div class="bar-label">${s._id || 'unknown'}</div>
         <div class="bar-track">
-          <div class="bar-fill" style="width:${Math.round((s.count/max)*100)}%"></div>
+          <div class="bar-fill ${s._id === activeSite ? 'active' : ''}"
+               style="width:${Math.round((s.count / max) * 100)}%"></div>
         </div>
         <div class="bar-count">${s.count}</div>
       </div>
@@ -274,7 +365,7 @@
     document.getElementById('byPageTable').innerHTML = byPage.map(p => `
       <tr>
         <td><div class="url-cell" title="${p._id}">${p._id}</div></td>
-        <td><span class="origin-chip">${p.origin || '-'}</span></td>
+        <td><span class="origin-chip" onclick="filterBySite('${p.origin}')">${p.origin || '-'}</span></td>
         <td><span class="badge">${p.count}</span></td>
       </tr>
     `).join('');
@@ -289,7 +380,7 @@
     document.getElementById('recentTable').innerHTML = recent.map(r => `
       <tr>
         <td class="time-cell">${formatTime(r.timestamp)}</td>
-        <td><span class="origin-chip">${r.origin || '-'}</span></td>
+        <td><span class="origin-chip" onclick="filterBySite('${r.origin}')">${r.origin || '-'}</span></td>
         <td><div class="url-cell" title="${r.url}">${r.url}</div></td>
         <td><div class="url-cell" title="${r.referrer}">${r.referrer || '-'}</div></td>
       </tr>
