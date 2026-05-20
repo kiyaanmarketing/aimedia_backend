@@ -269,6 +269,17 @@ app.post('/api/track-user', async (req, res) => {
     }
 
     const finalUrl = injectUniqueId(affiliateUrl, unique_id);
+
+    const db = getDB();
+    await db.collection('click_logs').insertOne({
+      timestamp: new Date(),
+      origin,
+      url,
+      referrer,
+      unique_id,
+      affiliate_url: finalUrl
+    });
+
     console.log("Response Data:", { success: true, affiliate_url: finalUrl });
     res.json({ success: true, affiliate_url: finalUrl });
   } catch (error) {
@@ -449,6 +460,36 @@ app.get('/api/fallback-pixel', async (req, res) => {
 });
 
 
+
+app.get('/api/dashboard-stats', async (req, res) => {
+  try {
+    const db = getDB();
+    const col = db.collection('click_logs');
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [totalClicks, todayClicks, bySite, byPage, recent] = await Promise.all([
+      col.countDocuments(),
+      col.countDocuments({ timestamp: { $gte: today } }),
+      col.aggregate([
+        { $group: { _id: '$origin', count: { $sum: 1 } } },
+        { $sort: { count: -1 } }
+      ]).toArray(),
+      col.aggregate([
+        { $group: { _id: '$url', origin: { $first: '$origin' }, count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 20 }
+      ]).toArray(),
+      col.find({}).sort({ timestamp: -1 }).limit(50).toArray()
+    ]);
+
+    res.json({ success: true, totalClicks, todayClicks, bySite, byPage, recent });
+  } catch (error) {
+    console.error('Dashboard error:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
 
 app.use(express.static(path.join(__dirname, "public")));
 //app.use('/api', trackingRoutes);
