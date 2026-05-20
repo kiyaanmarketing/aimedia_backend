@@ -232,15 +232,22 @@
     </div>
 
     <div class="section">
-      <div class="section-header">Top Pages</div>
-      <div style="overflow-x:auto;">
-        <table>
-          <thead>
-            <tr><th>Page URL</th><th>Site</th><th>Clicks</th></tr>
-          </thead>
-          <tbody id="byPageTable"></tbody>
-        </table>
+      <div class="section-header">Clicks by Country</div>
+      <div id="byCountryChart" style="padding:16px 20px;">
+        <div class="loading">Loading...</div>
       </div>
+    </div>
+  </div>
+
+  <div class="section full-section">
+    <div class="section-header">Top Pages</div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr><th>Page URL</th><th>Site</th><th>Clicks</th></tr>
+        </thead>
+        <tbody id="byPageTable"></tbody>
+      </table>
     </div>
   </div>
 
@@ -249,7 +256,7 @@
     <div style="overflow-x:auto;">
       <table>
         <thead>
-          <tr><th>Time</th><th>Site</th><th>Page URL</th><th>Referrer</th></tr>
+          <tr><th>Time</th><th>Site</th><th>Country</th><th>Page URL</th><th>Referrer</th></tr>
         </thead>
         <tbody id="recentTable"></tbody>
       </table>
@@ -292,6 +299,7 @@
       updateFilterBanner(data.activeSite);
       renderStatCards(data);
       renderBySite(data.bySite, data.activeSite);
+      renderByCountry(data.byCountry);
       renderByPage(data.byPage);
       renderRecent(data.recent);
     } catch (e) {
@@ -356,6 +364,29 @@
     `).join('');
   }
 
+  const countryNames = new Intl.DisplayNames(['en'], { type: 'region' });
+
+  function renderByCountry(byCountry) {
+    if (!byCountry || !byCountry.length) {
+      document.getElementById('byCountryChart').innerHTML = '<div class="loading">No country data yet — will appear on new clicks</div>';
+      return;
+    }
+    const max = byCountry[0].count;
+    document.getElementById('byCountryChart').innerHTML = byCountry.map(c => {
+      const code = c._id || 'Unknown';
+      let label = code;
+      try { if (code !== 'Unknown') label = countryNames.of(code) + ' (' + code + ')'; } catch(e) {}
+      return `
+        <div class="bar-row">
+          <div class="bar-label">${label}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${Math.round((c.count / max) * 100)}%; background:#f59e0b;"></div>
+          </div>
+          <div class="bar-count">${c.count}</div>
+        </div>`;
+    }).join('');
+  }
+
   function renderByPage(byPage) {
     if (!byPage.length) {
       document.getElementById('byPageTable').innerHTML =
@@ -377,14 +408,19 @@
         '<tr><td colspan="4" class="loading">No clicks recorded yet</td></tr>';
       return;
     }
-    document.getElementById('recentTable').innerHTML = recent.map(r => `
-      <tr>
-        <td class="time-cell">${formatTime(r.timestamp)}</td>
-        <td><span class="origin-chip" onclick="filterBySite('${r.origin}')">${r.origin || '-'}</span></td>
-        <td><div class="url-cell" title="${r.url}">${r.url}</div></td>
-        <td><div class="url-cell" title="${r.referrer}">${r.referrer || '-'}</div></td>
-      </tr>
-    `).join('');
+    document.getElementById('recentTable').innerHTML = recent.map(r => {
+      const code = r.country || 'Unknown';
+      let countryLabel = code;
+      try { if (code !== 'Unknown') countryLabel = countryNames.of(code) + ' (' + code + ')'; } catch(e) {}
+      return `
+        <tr>
+          <td class="time-cell">${formatTime(r.timestamp)}</td>
+          <td><span class="origin-chip" onclick="filterBySite('${r.origin}')">${r.origin || '-'}</span></td>
+          <td style="font-size:12px;color:#f59e0b;">${countryLabel}</td>
+          <td><div class="url-cell" title="${r.url}">${r.url}</div></td>
+          <td><div class="url-cell" title="${r.referrer}">${r.referrer || '-'}</div></td>
+        </tr>`;
+    }).join('');
   }
 
   function formatTime(ts) {

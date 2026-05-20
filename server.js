@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const corsMiddleware = require("./middleware/corsMiddleware");
 const path = require("path");
+const geoip = require("geoip-lite");
 const app = express();
 app.use(corsMiddleware);
 app.use(express.json());
@@ -252,39 +253,55 @@ app.post('/api/multirack-user', async (req, res) => {
 
 app.post('/api/track-user', async (req, res) => {
   const { url, referrer, unique_id, origin } = req.body;
-  console.log("Request Data:", req.body);
 
   if (!url || !unique_id) {
-    console.log("Missing Data Error: 250", { url, unique_id });
     return res.status(400).json({ success: false, error: 'Invalid request data' });
   }
 
   try {
     const affiliateUrl = await getAffiliateUrlByHostNameFindActive(origin, 'AffiliateUrlsN');
-    console.log("Affiliate URL:", affiliateUrl);
 
     if (!affiliateUrl) {
-      console.log("No affiliate URL found, using fallback");
       return res.json({ success: true, affiliate_url: "" });
     }
 
     const finalUrl = injectUniqueId(affiliateUrl, unique_id);
 
     const db = getDB();
+
+    // Dedup: same unique_id + url within 10 seconds = duplicate, skip insert
+    const tenSecondsAgo = new Date(Date.now() - 10000);
+    const existing = await db.collection('click_logs').findOne({
+      unique_id,
+      url,
+      timestamp: { $gte: tenSecondsAgo }
+    });
+    if (existing) {
+      return res.json({ success: true, affiliate_url: finalUrl });
+    }
+
+    // Country from IP
+    const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || '';
+    const geo = geoip.lookup(ip);
+    const country = geo?.country || 'Unknown';
+    const city = geo?.city || '';
+
     await db.collection('click_logs').insertOne({
       timestamp: new Date(),
       origin,
       url,
       referrer,
       unique_id,
-      affiliate_url: finalUrl
+      affiliate_url: finalUrl,
+      country,
+      city,
+      ip
     });
 
-    console.log("Response Data:", { success: true, affiliate_url: finalUrl });
     res.json({ success: true, affiliate_url: finalUrl });
   } catch (error) {
-    console.error("Error in API 267:", error.message);
-    res.status(500).json({ success: false, error: ' furono server error' });
+    console.error("Error in API:", error.message);
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
@@ -475,7 +492,7 @@ app.get('/api/dashboard-stats', async (req, res) => {
       ? { origin: site, timestamp: { $gte: today } }
       : { timestamp: { $gte: today } };
 
-    const [totalClicks, todayClicks, bySite, byPage, recent, allSites] = await Promise.all([
+    const [totalClicks, todayClicks, bySite, byPage, byCountry, recent, allSites] = await Promise.all([
       col.countDocuments(siteFilter),
       col.countDocuments(todayFilter),
       col.aggregate([
@@ -489,11 +506,16 @@ app.get('/api/dashboard-stats', async (req, res) => {
         { $sort: { count: -1 } },
         { $limit: 20 }
       ]).toArray(),
+      col.aggregate([
+        { $match: siteFilter },
+        { $group: { _id: '$country', count: { $sum: 1 } } },
+        { $sort: { count: -1 } }
+      ]).toArray(),
       col.find(siteFilter).sort({ timestamp: -1 }).limit(50).toArray(),
       col.distinct('origin')
     ]);
 
-    res.json({ success: true, totalClicks, todayClicks, bySite, byPage, recent, allSites, activeSite: site });
+    res.json({ success: true, totalClicks, todayClicks, bySite, byPage, byCountry, recent, allSites, activeSite: site });
   } catch (error) {
     console.error('Dashboard error:', error);
     res.status(500).json({ success: false, error: 'Internal server error' });
