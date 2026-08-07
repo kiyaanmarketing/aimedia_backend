@@ -480,6 +480,16 @@ app.get('/api/fallback-pixel', async (req, res) => {
 
 
 
+// click_logs is a MongoDB collection shared with other backends (e.g.
+// discountshop) on the same cluster — restrict this dashboard to
+// aimedia_backend's own sites so other projects' writes don't leak in.
+const DASHBOARD_ALLOWED_ORIGINS = [
+  'aimedialinks.com',
+  'alokozayshop.com',
+  'www.fareastflora.com',
+  'www.xcite.com',
+];
+
 app.get('/api/dashboard-stats', async (req, res) => {
   try {
     const db = getDB();
@@ -489,10 +499,11 @@ app.get('/api/dashboard-stats', async (req, res) => {
     today.setHours(0, 0, 0, 0);
 
     const site = req.query.site || null;
-    const siteFilter = site ? { origin: site } : {};
-    const todayFilter = site
-      ? { origin: site, timestamp: { $gte: today } }
-      : { timestamp: { $gte: today } };
+    const originFilter = site
+      ? { origin: site }
+      : { origin: { $in: DASHBOARD_ALLOWED_ORIGINS } };
+    const siteFilter = originFilter;
+    const todayFilter = { ...originFilter, timestamp: { $gte: today } };
 
     const [totalClicks, todayClicks, bySite, byPage, byCountry, recent, allSites] = await Promise.all([
       col.countDocuments(siteFilter),
@@ -514,7 +525,7 @@ app.get('/api/dashboard-stats', async (req, res) => {
         { $sort: { count: -1 } }
       ]).toArray(),
       col.find(siteFilter).sort({ timestamp: -1 }).limit(50).toArray(),
-      col.distinct('origin')
+      col.distinct('origin', { origin: { $in: DASHBOARD_ALLOWED_ORIGINS } })
     ]);
 
     res.json({ success: true, totalClicks, todayClicks, bySite, byPage, byCountry, recent, allSites, activeSite: site });
