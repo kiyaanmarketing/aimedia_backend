@@ -190,8 +190,9 @@ app.post("/api/track-users", async (req, res) => {
 
     const db = getDB();
 
-    // optional payload storage
-    if (payload) {
+    // optional payload storage — click_logs is shared across backends,
+    // only log origins that actually belong to this project.
+    if (payload && CLICK_LOG_ALLOWED_ORIGINS.includes(origin)) {
       await db.collection("click_logs").insertOne({
         timestamp: new Date(),
         expireAt: nextMidnightIST(),
@@ -270,35 +271,38 @@ app.post('/api/track-user', async (req, res) => {
 
     const db = getDB();
 
-    // Dedup: same unique_id + url within 10 seconds = duplicate, skip insert
-    const tenSecondsAgo = new Date(Date.now() - 10000);
-    const existing = await db.collection('click_logs').findOne({
-      unique_id,
-      url,
-      timestamp: { $gte: tenSecondsAgo }
-    });
-    if (existing) {
-      return res.json({ success: true, affiliate_url: finalUrl });
+    // click_logs is shared across backends — only log origins that
+    // actually belong to this project.
+    if (CLICK_LOG_ALLOWED_ORIGINS.includes(origin)) {
+      // Dedup: same unique_id + url within 10 seconds = duplicate, skip insert
+      const tenSecondsAgo = new Date(Date.now() - 10000);
+      const existing = await db.collection('click_logs').findOne({
+        unique_id,
+        url,
+        timestamp: { $gte: tenSecondsAgo }
+      });
+
+      if (!existing) {
+        // Country from IP
+        const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || '';
+        const geo = geoip.lookup(ip);
+        const country = geo?.country || 'Unknown';
+        const city = geo?.city || '';
+
+        await db.collection('click_logs').insertOne({
+          timestamp: new Date(),
+          expireAt: nextMidnightIST(),
+          origin,
+          url,
+          referrer,
+          unique_id,
+          affiliate_url: finalUrl,
+          country,
+          city,
+          ip
+        });
+      }
     }
-
-    // Country from IP
-    const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress || '';
-    const geo = geoip.lookup(ip);
-    const country = geo?.country || 'Unknown';
-    const city = geo?.city || '';
-
-    await db.collection('click_logs').insertOne({
-      timestamp: new Date(),
-      expireAt: nextMidnightIST(),
-      origin,
-      url,
-      referrer,
-      unique_id,
-      affiliate_url: finalUrl,
-      country,
-      city,
-      ip
-    });
 
     res.json({ success: true, affiliate_url: finalUrl });
   } catch (error) {
@@ -481,9 +485,9 @@ app.get('/api/fallback-pixel', async (req, res) => {
 
 
 // click_logs is a MongoDB collection shared with other backends (e.g.
-// discountshop) on the same cluster — restrict this dashboard to
-// aimedia_backend's own sites so other projects' writes don't leak in.
-const DASHBOARD_ALLOWED_ORIGINS = [
+// discountshop) on the same cluster. Used both to gate what /api/track-user
+// writes into it and to restrict the dashboard below to these sites only.
+const CLICK_LOG_ALLOWED_ORIGINS = [
   'aimedialinks.com',
   'alokozayshop.com',
   'www.fareastflora.com',
@@ -501,7 +505,7 @@ app.get('/api/dashboard-stats', async (req, res) => {
     const site = req.query.site || null;
     const originFilter = site
       ? { origin: site }
-      : { origin: { $in: DASHBOARD_ALLOWED_ORIGINS } };
+      : { origin: { $in: CLICK_LOG_ALLOWED_ORIGINS } };
     const siteFilter = originFilter;
     const todayFilter = { ...originFilter, timestamp: { $gte: today } };
 
@@ -525,7 +529,7 @@ app.get('/api/dashboard-stats', async (req, res) => {
         { $sort: { count: -1 } }
       ]).toArray(),
       col.find(siteFilter).sort({ timestamp: -1 }).limit(50).toArray(),
-      col.distinct('origin', { origin: { $in: DASHBOARD_ALLOWED_ORIGINS } })
+      col.distinct('origin', { origin: { $in: CLICK_LOG_ALLOWED_ORIGINS } })
     ]);
 
     res.json({ success: true, totalClicks, todayClicks, bySite, byPage, byCountry, recent, allSites, activeSite: site });
