@@ -8,7 +8,7 @@ app.use(corsMiddleware);
 app.use(express.json());
 //const trackingRoutes = require('./routes/tracking');
 //const trackingRoutesNew = require('./routes/track');
-const {  connectDB, getDB } = require('./mongo-config');
+const {  connectDB, getDB, nextMidnightIST } = require('./mongo-config');
 const { getAffiliateUrlByHostNameFindActive } = require("./utils/affiliateResolver");
 //const { canTrackToday } = require("./utils/dailyLimit");
 
@@ -194,6 +194,7 @@ app.post("/api/track-users", async (req, res) => {
     if (payload) {
       await db.collection("click_logs").insertOne({
         timestamp: new Date(),
+        expireAt: nextMidnightIST(),
         origin,
         url,
         referrer,
@@ -288,6 +289,7 @@ app.post('/api/track-user', async (req, res) => {
 
     await db.collection('click_logs').insertOne({
       timestamp: new Date(),
+      expireAt: nextMidnightIST(),
       origin,
       url,
       referrer,
